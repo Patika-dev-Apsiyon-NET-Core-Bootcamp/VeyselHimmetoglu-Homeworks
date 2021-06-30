@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <input type="text" id="txtUserName" />
+    <input type="password" id="txtPassword" />
+
+    <input type="button" onclick="login()" value="Giriş" />
+    <ul id="userlist">
+    </ul>
+    <input type="button" onclick="users()" value="Kullanıcılar" />
+</div>
+
+
+@section Scripts {
+    <script>
+        function login() {
+            let  userName = document.getElementById("txtUserName").value;
+            let password = document.getElementById("txtPassword").value;
+            const url = `http://localhost:60178/api/auth/login?userName=${userName}&password=${password}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(data => localStorage.setItem("token", data.token));
+        }
+
+        function users() {
+            let ul = document.getElementById("userlist");
+    
+
+            fetch("http://localhost:60178/api/sms/getusers", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}` 
+                }
+            }).then(res => res.json()).then(data => {
+                data.map(item => {
+                    let childElement = document.createElement("li");
+                    childElement.innerHTML = item;
+                    ul.appendChild(childElement);
+                })
+            })  
+        }
+    </script>
+}
